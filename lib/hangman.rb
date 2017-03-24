@@ -22,7 +22,7 @@ begin
   player_attempts_count = player_attempts.length
 
   # Limit to one character a-z
-  if player_guess =~ /[a-z]/ || /[A-Z]/
+  if player_guess.match(/[[:alpha:]]/) == nil
     puts "Please enter a character between A and Z."
   elsif player_guess.length != 1
     puts "Please enter just one character."
@@ -39,15 +39,17 @@ begin
   else
     puts "#{player_guess} is not in the hidden word... I'm so sorry for you."
   end
-end while
+end while WinLoseCondition == true || false
 
 class WinLoseCondition
   def initialize(player_attempts_count)
     if player_attempts_count > 6
       puts "Your Hangyman is hung... This is bad news."
-      return # ?true?
-    else gamespace.includes?("_") == false
+      return true
+    elsif gamespace.includes?("_") == false
       puts "You have saved Hangyman! You must feel like such a hero."
+      return false
+    else nil
     end
   end
 end
