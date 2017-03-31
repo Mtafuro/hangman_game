@@ -1,11 +1,10 @@
 class Hangyman
-  attr_accessor :game_word, :game_space, :game_round, :player_attempts, :player_guess
+  attr_accessor :game_word, :game_space, :game_round, :player_attempts, :player_guess, :menu_selection
 
   def initialize
     new_word
     attempts_array
     hide_letters
-    menu
     game_round
   end
 
@@ -33,7 +32,7 @@ class Hangyman
     else
        @game_space = @game_word.gsub(/[^#{@player_attempts}]/, "_") # Block reverse of player_attempts
        @game_space = @game_space.to_s
-     end
+    end
   end
 
 # Game loop
@@ -41,30 +40,18 @@ class Hangyman
 # --------------------------------------- seperate this method
   def game_round
     hide_letters
-# First checks win condition.
-    case
-    when win_lose? == true
-      puts "Your Hangyman is hung... This is bad news."
-      puts "The word was \"#{@game_word}.\""
-    when win_lose? == false
-      puts "You have saved Hangyman! You must feel like such a hero."
-      puts "The word is \"#{@game_word}.\""
-    when win_lose? == nil
-      puts "#{@game_space}"
-      puts "Your word has #{@game_word.length} letters."
-      puts "Here are your attempts #{@player_attempts}. Make a guess!"
-      # GET PLAYER INPUT
+    win_lose?
+    win_lose_feedback
+# GET PLAYER INPUT
       @player_guess = gets.chomp!
-  # Cannot repeat letters.
-      if @player_guess.match /[0..5]/
-        menu_options
-
-
+      if @player_guess == '0'
+        menu
+# Cannot repeat letters.
       elsif @player_attempts.include?(@player_guess)
         puts "Please enter a letter you haven't yet picked."
         game_round
-  # Limit to one character, a-z
-      elsif @player_guess.match(/[a-z6..9]/) == nil
+# Limit to one character, a-z
+      elsif @player_guess =~ /[^a-z0]/
         puts "Please enter a character between A and Z. Or enter '0' for the menu."
         game_round
       elsif @player_guess.length != 1
@@ -74,7 +61,7 @@ class Hangyman
         letter_correct?
       end
     end
-  end
+
 # --------------------------------------- seperate this method
 
 # Player guess correct?
@@ -103,48 +90,87 @@ class Hangyman
       return nil
     end
   end
+
+  def win_lose_feedback
+  case
+    when win_lose? == true
+      puts "Your Hangyman is hung... This is bad news."
+      puts "The word was \"#{@game_word}.\""
+      menu
+    when win_lose? == false
+      puts "You have saved Hangyman! You must feel like such a hero."
+      puts "The word is \"#{@game_word}.\""
+      menu
+    when win_lose? == nil
+      puts "#{@game_space}"
+      puts "Your word has #{@game_word.length} letters."
+      puts "Here are your attempts #{@player_attempts}. Make a guess!"
+      puts "Please input a letter or \'0\' for the game menu."
+    end
+  end
 # --------------------------------------- seperate this method
 
 
   def menu
-    game_menu = puts "Please select an action at any time:\n
+    @game_menu = puts "Please select an action at any time:\n
                       0: Show Menu\n
                       1: New Game\n
                       2: Save Game\n
                       3: Load Game\n
                       4: Exit Game\n
                       5: Solve\n"
+    @menu_selection = gets.chomp!
+    menu_options
   end
 
-end
+  def menu_options
+    case
+      when @menu_selection == '0'
+        menu
 
-class Menu
-  def menu_options(player_guess)
-    case @player_guess
-      when @player_guess == 0
-        # Show Menu
-        game_menu
-      when @player_guess == 1
-        # New Game
+      when @menu_selection == '1'
         Hangyman.new
-      when @player_guess == 2
-        # Save Game
-        save_file = File.open("test.txt", "w+") do |data|
-        data.puts @game_word
-        data.puts @player_attempts
-        data.puts @player_attempts_count
-        end
+
+      when @menu_selection == '2'
+        save_data
         game_round
-      when @player_guess == 3
-        # Load Game
-        load_file = File.open("test.txt", "r")
-      when @player_guess == 4
-        # Exit Game
+
+      when @menu_selection == '3'
+        load_data
+
+      when @menu_selection == '4'
         exit
-      when @player_guess == 5
-        # Solve
+
+      when @menu_selection == '5'
+# Solve
     end
   end
+
+# Selection 2
+  def save_data
+    save_game = File.new("savegame.txt", "w+")
+    save_game.print "#{@player_attempts}" + "\n" # Line 1
+    save_game.print "#{@player_attempts_count}" + "\n" # Line 2
+    save_game.print "#{@game_word}" # Line 3
+    save_game.close
+    puts "Game Saved!"
+  end
+
+# Selection 3
+  def load_data
+    load_game = File.open("savegame.txt", "r")#.each { |line| puts line }
+    load_game.lineno = 0
+    @player_attemtps = load_game.gets
+    load_game.lineno = 1
+    @player_attemtps_count = load_game.gets
+    load_game.lineno = 2
+    @game_word = load_game.gets
+    load_game.close
+    puts "Game Loaded!"
+    game_round
+  end
+
+# Class end
 end
 
-Hangyman.new
+hangman = Hangyman.new
