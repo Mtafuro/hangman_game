@@ -143,6 +143,7 @@ class Hangyman
 
       when @menu_selection == '5'
 # Solve
+        solve_game
     end
   end
 
@@ -158,7 +159,7 @@ class Hangyman
 
 # Selection 3
   def load_data
-    load_game = File.open("savegame.txt", "r")#.each { |line| puts line }
+    load_game = File.open("savegame.txt", "r")
     load_game.lineno = 0
     @player_attemtps = load_game.gets
     load_game.lineno = 1
@@ -170,6 +171,11 @@ class Hangyman
     game_round
   end
 
+  def solve_game
+    puts "Enter your guess:"
+    @player_guess = gets.chomp!
+    game_round
+  end
 # Class end
 end
 
