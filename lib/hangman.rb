@@ -179,4 +179,4 @@ class Hangyman
 # Class end
 end
 
-hangman = Hangyman.new
+#hangman = Hangyman.new
