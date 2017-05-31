@@ -38,28 +38,25 @@ class Hangyman
 # Game loop
 # Player guess
 # --------------------------------------- seperate this method
-  def game_round(*player_guess)
+  def game_round
     hide_letters
     win_lose?
     win_lose_feedback
 # GET PLAYER INPUT
-      @player_guess = player_guess.to_s
-      if @player_guess.nil?
-        @msg = "Please enter your first guess!"
-        @game_menu
-      elsif @player_guess == '0'
+      @player_guess = gets.chomp!
+      if @player_guess == '0'
         menu
 # Cannot repeat letters.
       elsif @player_attempts.include?(@player_guess)
-        @msg = "Please enter a letter you haven't yet picked."
-        #game_round
+        puts "Please enter a letter you haven't yet picked."
+        game_round
 # Limit to one character, a-z
       elsif @player_guess =~ /[^a-z0]/
-        @msg = "Please enter a character between A and Z. Or enter '0' for the menu."
-        #game_round
-      elsif @player_guess.length > 1
-        @msg = "Please enter just one character."
-        #game_round
+        puts "Please enter a character between A and Z. Or enter '0' for the menu."
+        game_round
+      elsif @player_guess.length != 1
+        puts "Please enter just one character."
+        game_round
       else
         letter_correct?
       end
@@ -71,11 +68,11 @@ class Hangyman
 # --------------------------------------- seperate this method
   def letter_correct?
     if @game_word.include?(@player_guess)
-      @msg = "\'#{@player_guess}\' is in the hidden word!"
+      puts "\'#{@player_guess}\' is in the hidden word!"
       attempts_array
       game_round
     else
-      @msg = "\'#{@player_guess}\' is not in the hidden word... I'm so sorry for you."
+      puts "\'#{@player_guess}\' is not in the hidden word... I'm so sorry for you."
       attempts_array
       game_round
     end
@@ -97,32 +94,32 @@ class Hangyman
   def win_lose_feedback
   case
     when win_lose? == true
-      @msg = "Your Hangyman is hung... This is bad news./n
-      The word was \"#{@game_word}.\""
+      puts "Your Hangyman is hung... This is bad news."
+      puts "The word was \"#{@game_word}.\""
       menu
     when win_lose? == false
-      @msg = "You have saved Hangyman! You must feel like such a hero./n
-      The word is \"#{@game_word}.\""
+      puts "You have saved Hangyman! You must feel like such a hero."
+      puts "The word is \"#{@game_word}.\""
       menu
     when win_lose? == nil
-      @msg = "#{@game_space}/n
-      Your word has \"#{@game_word.length}\" letters./n
-      Here are your attempts \"#{@player_attempts}\". Make a guess!/n
-      Please input a letter or \'0\' for the game menu."
+      puts "#{@game_space}"
+      puts "Your word has #{@game_word.length} letters."
+      puts "Here are your attempts #{@player_attempts}. Make a guess!"
+      puts "Please input a letter or \'0\' for the game menu."
     end
   end
 # --------------------------------------- seperate this method
 
 
   def menu
-    @game_menu = "Please select an action at any time:\n
+    @game_menu = puts "Please select an action at any time:\n
                       0: Show Menu\n
                       1: New Game\n
                       2: Save Game\n
                       3: Load Game\n
                       4: Exit Game\n
                       5: Solve\n"
-    @menu_selection = player_guess
+    @menu_selection = gets.chomp!
     menu_options
   end
 
@@ -175,8 +172,8 @@ class Hangyman
   end
 
   def solve_game
-    @msg = "Enter your guess:"
-    @player_guess = player_guess
+    puts "Enter your guess:"
+    @player_guess = gets.chomp!
     game_round
   end
 # Class end
